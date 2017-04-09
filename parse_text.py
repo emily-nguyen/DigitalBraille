@@ -26,6 +26,7 @@ def image_to_text(image_url):
         connection.request('POST', '/vision/v1.0/ocr?%s' % params, body, headers)
         response = connection.getresponse()
         data = json.loads(response.read())
+
         lines = data['regions'][0]['lines']
 
         for i in lines:
@@ -58,63 +59,11 @@ def text_to_braille(text, output_type):
     })
 
     try: 
-        # connection = httplib.HTTPSConnection('api.funtranslations.com')
-        # connection.request('POST', '/translate/braille/{0}.json?%s'.format(output_type) 
-        #     % params, '', headers)
-        # response = connection.getresponse()
-        # data = json.loads(response.read())
-        data = {
-    "success": {
-        "total": 1
-    },
-    "contents": {
-        "translated": [
-            "none",
-            "none",
-            "6",
-            "124",
-            "136",
-            "1345",
-            "none",
-            "6",
-            "2345",
-            "1235",
-            "1",
-            "1345",
-            "234",
-            "123",
-            "6",
-            "1345",
-            "234",
-            "none",
-            "125",
-            "1",
-            "234",
-            "none",
-            "5",
-            "234",
-            "1456",
-            "346",
-            "none",
-            "123456",
-            "\r",
-            "\n",
-            "5",
-            "15",
-            "13456",
-            "5",
-            "135",
-            "256",
-            "\r",
-            "\n"
-        ],
-        "text": "Fun Translations has something for everyone.",
-        "translation": {
-            "source": "english",
-            "destination": "braille dots"
-        }
-    }
-}
+        connection = httplib.HTTPSConnection('api.funtranslations.com')
+        connection.request('POST', '/translate/braille/{0}.json?{1}{2}{3}'.format(output_type, 
+            params, '', headers))
+        response = connection.getresponse()
+        data = json.loads(response.read())
         error_message = data.get('error', {}).get('message', '')
 
         if len(error_message) > 0:
@@ -123,7 +72,7 @@ def text_to_braille(text, output_type):
 
         contents = data.get('contents', {}).get('translated', [])
  
-        #connection.close()
+        connection.close()
 
         # Filter out '\r' and '\n'
         return list(filter(lambda x: (x not in ['\r', '\n']), contents))
@@ -132,11 +81,21 @@ def text_to_braille(text, output_type):
 
 def braille_dots(text):
     '''Returns a list of translated text into braille dots'''
-    return text_to_braille(text, 'dots')
+    result = text_to_braille(text, 'dots')
+
+    with open('dots.json', 'w') as f:
+        json.dump(result, f)
+
+    return result
 
 def braille_image(text):
-    '''Returns a list of translated text into braille images'''
-    return text_to_braille(text, 'image')     
+    '''Returns a list of translated text into braille images'''   
+    result = text_to_braille(text, 'image')
+
+    with open('image.json', 'w') as f:
+        json.dump(result, f)
+
+    return result
 
 if __name__ == '__main__':
     # Image to Text
@@ -150,5 +109,5 @@ if __name__ == '__main__':
     ''' 
     #print image_to_text('http://jeroen.github.io/images/testocr.png')
 
-    #print braille_dots('Fun Translations has something for everyone.')
-    #braille_dots('Image to Text')
+    #print braille_image('Fun Translations has something for everyone.')
+    #print braille_dots('Image to Text')
