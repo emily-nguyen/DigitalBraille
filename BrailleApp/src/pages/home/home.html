@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Digital Braille</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class='parse-text'>
+  <ion-list>
+    <ion-item>
+      <ion-label floating>Image URL</ion-label>
+      <ion-input type='url' [(ngModel)]='imageUrl'></ion-input>
+    </ion-item>
+    <ion-item>
+      <button ion-button (click)='translateText()'>Start Translation</button>
+    </ion-item>
+  </ion-list>
+  <ion-row wrap>
+    <ion-col col-4 *ngFor="let char of brailleDots">
+      <div innerHTML=[{{char}}]></div>
+    </ion-col>
+  </ion-row>
+</ion-content>

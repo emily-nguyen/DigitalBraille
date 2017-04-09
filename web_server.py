@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 
 import json
 import parse_text
@@ -17,6 +18,7 @@ http://localhost:5000/braille/image?image_url<url of image>
 '''
 
 app = Flask(__name__)
+CORS(app)
 
 # @app.route('/braille/dots')
 # def get_braille_dots():
